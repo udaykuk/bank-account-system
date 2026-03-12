@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+
 @Service
 public class AccountService {
 
@@ -28,6 +30,7 @@ public class AccountService {
          public Account getAccount(long accNo){
              return accountRepo.findById(accNo).orElse(null);
         }
+
         public Account updateAccount(long accNo, Account acc){
             Account existing = getAccount(accNo);
             existing.setName(acc.getName());
@@ -38,5 +41,24 @@ public class AccountService {
 //            accountRepo.delete(accountRepo.findById(accNo).orElse(null));
             accountRepo.deleteById(accNo);
         }
+        public void deposite(long accNo, BigDecimal amount){
+        Account change=getAccount(accNo);
+        change.setBalance(change.getBalance().add(amount));
+            accountRepo.save(change);
+        }
+        public void withDraw(long accNo, BigDecimal amount){
+           Account change=getAccount(accNo);
+           if(change.getBalance().compareTo(amount)>0){
+                change.setBalance(change.getBalance().subtract(amount));
+                accountRepo.save(change);
+           }
+           else throw new RuntimeException("Insufficient funds!");
+
+
+    }
+    public void transfer(long accNoFrom,long accNoTo,BigDecimal amount){
+        withDraw(accNoFrom,amount);
+        deposite(accNoTo,amount);
+    }
 
 }

@@ -16,11 +16,11 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long accountNo;
     private String name;
-    private BigDecimal balance;
+    private BigDecimal balance = BigDecimal.ZERO;
     private AccountType accountType;
 
     public enum AccountType{
-        SAVING,CURRENT;
+        SAVINGS,CURRENT;
     }
     private Date dateCreated;
 }

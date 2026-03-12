@@ -3,8 +3,11 @@ package com.bank.bank_account_system.Controller;
 import com.bank.bank_account_system.Entity.Account;
 import com.bank.bank_account_system.Repository.AccountRepo;
 import com.bank.bank_account_system.Service.AccountService;
+import com.bank.bank_account_system.dto.TransferRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.math.BigDecimal;
 
 @RestController
 @RequestMapping("/Account")
@@ -34,6 +37,18 @@ public class AccountController {
     }
 
 
+    @PostMapping("/{accNo}/deposit")
+    public void deposite(@PathVariable long accNo,@RequestBody BigDecimal balance){
+        accountService.deposite(accNo,balance);
+    }
+    @PostMapping("/{accNo}/withdraw")
+    public void withdraw(@PathVariable long accNo,@RequestBody BigDecimal balance) {
+        accountService.withDraw(accNo, balance);
+    }
 
+    @PostMapping("/transfer")
+    public void transfer(@RequestBody TransferRequest req) {
+        accountService.transfer(req.getFromAccNo(), req.getToAccNo(),req.getAmount() );
+    }
 
 }
