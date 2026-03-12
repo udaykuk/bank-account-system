@@ -1,6 +1,7 @@
 package com.bank.bank_account_system.Controller;
 
 import com.bank.bank_account_system.Entity.Account;
+import com.bank.bank_account_system.Entity.Transaction;
 import com.bank.bank_account_system.Repository.AccountRepo;
 import com.bank.bank_account_system.Service.AccountService;
 import com.bank.bank_account_system.dto.TransferRequest;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @RestController
 @RequestMapping("/Account")
@@ -49,6 +51,10 @@ public class AccountController {
     @PostMapping("/transfer")
     public void transfer(@RequestBody TransferRequest req) {
         accountService.transfer(req.getFromAccNo(), req.getToAccNo(),req.getAmount() );
+    }
+    @GetMapping("/{accNo}/transactions")
+    public List<Transaction> transactionHistory(@PathVariable long accNo){
+        return accountService.transactionhistory(accNo);
     }
 
 }

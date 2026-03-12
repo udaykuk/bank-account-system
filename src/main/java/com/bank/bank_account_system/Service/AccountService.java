@@ -1,6 +1,7 @@
 package com.bank.bank_account_system.Service;
 
 import com.bank.bank_account_system.Entity.Account;
+import com.bank.bank_account_system.Entity.Transaction;
 import com.bank.bank_account_system.Repository.AccountRepo;
 import com.bank.bank_account_system.Repository.TransactionRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,11 @@ import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+
+import static com.bank.bank_account_system.Entity.Transaction.TransactionType.CREDIT;
+import static com.bank.bank_account_system.Entity.Transaction.TransactionType.DEBIT;
 
 @Service
 public class AccountService {
@@ -45,12 +51,24 @@ public class AccountService {
         Account change=getAccount(accNo);
         change.setBalance(change.getBalance().add(amount));
             accountRepo.save(change);
+            Transaction transaction=new Transaction();
+            transaction.setAmount(amount);
+            transaction.setTransactionType(CREDIT);
+            transaction.setReceiverAccountNumber(change );
+            transaction.setTransactiondate(new Date());
+            transactionRepo.save(transaction);
         }
         public void withDraw(long accNo, BigDecimal amount){
            Account change=getAccount(accNo);
            if(change.getBalance().compareTo(amount)>0){
                 change.setBalance(change.getBalance().subtract(amount));
                 accountRepo.save(change);
+               Transaction transaction=new Transaction();
+               transaction.setAmount(amount);
+               transaction.setTransactionType(DEBIT);
+               transaction.setReceiverAccountNumber(change );
+               transaction.setTransactiondate(new Date());
+               transactionRepo.save(transaction);
            }
            else throw new RuntimeException("Insufficient funds!");
 
@@ -59,6 +77,11 @@ public class AccountService {
     public void transfer(long accNoFrom,long accNoTo,BigDecimal amount){
         withDraw(accNoFrom,amount);
         deposite(accNoTo,amount);
+
+    }
+    public List<Transaction>  transactionhistory(Long accNo){
+        List<Transaction>  acc=transactionRepo.findByReceiverAccountNumber(getAccount(accNo));
+        return acc;
     }
 
 }
