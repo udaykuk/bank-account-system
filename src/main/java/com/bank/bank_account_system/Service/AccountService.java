@@ -2,6 +2,8 @@ package com.bank.bank_account_system.Service;
 
 import com.bank.bank_account_system.Entity.Account;
 import com.bank.bank_account_system.Entity.Transaction;
+import com.bank.bank_account_system.Exception.AccountNotFoundException;
+import com.bank.bank_account_system.Exception.InsufficientFundsException;
 import com.bank.bank_account_system.Repository.AccountRepo;
 import com.bank.bank_account_system.Repository.TransactionRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +36,7 @@ public class AccountService {
     }
 
          public Account getAccount(long accNo){
-             return accountRepo.findById(accNo).orElse(null);
+             return accountRepo.findById(accNo).orElseThrow(() -> new AccountNotFoundException("Account not found with id: " + accNo));
         }
 
         public Account updateAccount(long accNo, Account acc){
@@ -70,7 +72,7 @@ public class AccountService {
                transaction.setTransactiondate(new Date());
                transactionRepo.save(transaction);
            }
-           else throw new RuntimeException("Insufficient funds!");
+            throw new InsufficientFundsException("Insufficient funds!");
 
 
     }
